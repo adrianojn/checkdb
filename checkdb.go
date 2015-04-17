@@ -21,6 +21,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
@@ -117,8 +118,28 @@ func main() {
 	for _, c := range tempDbCards {
 		_, found := cardMap[c.Id]
 		if !found {
-			missingCards = append(missingCards, c.Name)
+			missingCards = append(missingCards, fmt.Sprint(c.Id, " ", c.Name))
 		}
 	}
-	fmt.Println(len(missingCards), "missing cards")
+	size := len(missingCards)
+	fmt.Println(size, "missing cards")
+	if size == 0 {
+		os.Exit(1)
+	}
+	if size < 20 {
+		fmt.Println(strings.Join(missingCards, "\r\n"))
+	} else {
+		file, err := os.Create("errors.txt")
+		if err != nil {
+			panic(err)
+		}
+		_, err = file.WriteString(strings.Join(missingCards, "\r\n"))
+		if err != nil {
+			panic(err)
+		}
+		err = file.Close()
+		if err != nil {
+			panic(err)
+		}
+	}
 }
