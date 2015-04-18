@@ -106,16 +106,16 @@ func main() {
 		}
 	}
 
-	cardMap := make(map[int]string)
-	for _, c := range cards {
-		cardMap[c.Id] = c.Name
-	}
-
 	var tempDbCards []Card
 	tempDb.Select(&tempDbCards, "select id, name from texts")
 
-	var missingCards []string
+	cardMap := make(map[int]string)
 	for _, c := range tempDbCards {
+		cardMap[c.Id] = c.Name
+	}
+
+	var missingCards []string
+	for _, c := range cards {
 		_, found := cardMap[c.Id]
 		if !found {
 			missingCards = append(missingCards, fmt.Sprint(c.Id, " ", c.Name))
