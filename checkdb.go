@@ -74,8 +74,12 @@ SELECT texts.id, texts.name
 FROM   datas, texts
 WHERE  datas.id = texts.id;`
 
+var (
+	dbName   = flag.String("db", "cards.cdb", "database name")
+	filename = flag.String("file", "errors.txt", "output file")
+)
+
 func main() {
-	dbName := flag.String("db", "cards.cdb", "database name")
 	flag.Parse()
 	dir := flag.Arg(0)
 	if dir == "" {
@@ -134,7 +138,7 @@ func main() {
 	if size < 20 {
 		fmt.Println(strings.Join(missingCards, "\r\n"))
 	} else {
-		file, err := os.Create("errors.txt")
+		file, err := os.Create(*filename)
 		if err != nil {
 			panic(err)
 		}
@@ -146,5 +150,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+		path, _ := filepath.Abs(*filename)
+		fmt.Println("output saved on", path)
 	}
 }
