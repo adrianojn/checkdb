@@ -69,6 +69,11 @@ CREATE TABLE [texts] (
 );
 `
 
+var query = `
+SELECT texts.id, texts.name
+FROM   datas, texts
+WHERE  datas.id = texts.id;`
+
 func main() {
 	dbName := flag.String("db", "cards.cdb", "database name")
 	flag.Parse()
@@ -80,7 +85,7 @@ func main() {
 
 	db := sqlx.MustOpen("sqlite3", *dbName)
 	var cards []Card
-	err := db.Select(&cards, "select id, name from texts")
+	err := db.Select(&cards, query)
 	if err != nil {
 		panic(err)
 	}
@@ -107,7 +112,7 @@ func main() {
 	}
 
 	var tempDbCards []Card
-	tempDb.Select(&tempDbCards, "select id, name from texts")
+	tempDb.Select(&tempDbCards, query)
 
 	cardMap := make(map[int]string)
 	for _, c := range tempDbCards {
